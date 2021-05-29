@@ -1,5 +1,5 @@
 # Shiny app for the LFS
-# Started May 26, 2021
+# May 28, 2021
 library(shiny)
 library(tidyverse)
 library(rlist)
@@ -19,6 +19,8 @@ source("Make_tablM5.R")
 source("Make_chrtM5.R")
 source("Make_tablM6.R")
 source("Make_chrtM6.R")
+source("Make_tablM7.R")
+source("Make_chrtM7.R")
 source("mtFunc.R")
 source("mcFunc.R")
 source("mt2Func.R")
@@ -31,6 +33,8 @@ source("mt5Func.R")
 source("mc5Func.R")
 source("mt6Func.R")
 source("mc6Func.R")
+source("mt7Func.R")
+source("mc7Func.R")
 
 ui <- navbarPage(title = tags$b(tags$span(style="color:red", 
   "Labour force survey")),
@@ -87,6 +91,13 @@ ui <- navbarPage(title = tags$b(tags$span(style="color:red",
       { font-size: 20px; line-height: 20px; }"),
     mt6UI(id="idmt6"),
     mc6UI(id="idmc6")
+  ),
+  navbarMenu(tags$b(tags$span(style="color:blue", HTML("Job tenure<br>by occupation"))),
+    tags$style(type='text/css', ".selectize-input { 
+      font-size: 24px; line-height: 24px;} .selectize-dropdown 
+      { font-size: 20px; line-height: 20px; }"),
+    mt7UI(id="idmt7"),
+    mc7UI(id="idmc7")
   )
 )
 server <- function(input, output,session) {
@@ -104,6 +115,8 @@ server <- function(input, output,session) {
   mc5Server(id="idmc5")
   mt6Server(id="idmt6")
   mc6Server(id="idmc6")
+  mt7Server(id="idmt7")
+  mc7Server(id="idmc7")
 }
 
 shinyApp(ui, server)

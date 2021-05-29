@@ -1,4 +1,4 @@
-# Make_chrtM6() monthly hours and wages by selected characteristics charts function
+# Make_chrtM7() monthly job tenure charts function
 # May 28, 2021
 
 pkgs <- c("tidyverse","scales","tibble","stringr","rlang","lubridate")
@@ -6,17 +6,18 @@ inst <- lapply(pkgs,library,character.only=TRUE)
 
 source("Common_stuff.R")
 
-Make_chrtM6 <- function(haw,MYtitl,type,month1,month2,altTitl,interv) {
-  q0 <- readRDS(paste0("rds/",TS[[6]]$STCno,".rds"))
-  q0 <- select(q0,REF_DATE,CHR,haw)
-  q0 <- pivot_wider(q0,names_from=CHR,values_from=haw)
+Make_chrtM7 <- function(MYtitl,geo,jtn,sex,type,month1,month2,altTitl,interv) {
+  q0 <- readRDS(paste0("rds/",TS[[7]]$STCno,".rds"))
+  q0 <- filter(q0,GEO==geo,JTN==jtn,SEX==sex)
+  q0 <- select(q0,REF_DATE,NOC,VALUE)
+  q0 <- pivot_wider(q0,names_from=NOC,values_from=VALUE)
   if (altTitl=="") {ChrtTitl <- paste0(MYtitl)}
   if (altTitl!="") {ChrtTitl <- altTitl}
   Fmth <- format(month1,"%b %Y")
   Lmth <- format(month2,"%b %Y")
   if (type==1) {
-    MYsubtitl=paste0(haw,"\n",
-      "Monthly, ",Fmth," to ",Lmth,", ",TS[[6]]$Seas)
+    MYsubtitl=paste0(jtn,", ",geo,", ",sex,"\n",
+      "Monthly, ",Fmth," to ",Lmth,", ",TS[[7]]$Seas)
     q1 <- mutate(q0,val=.data[[MYtitl]])
     q1 <- filter(q1,REF_DATE>=month1 & REF_DATE<=month2)
     c1 <- ggplot(q1,
@@ -28,9 +29,9 @@ Make_chrtM6 <- function(haw,MYtitl,type,month1,month2,altTitl,interv) {
         linetype="dashed")
     }
   } else if (type==2) {
-    MYsubtitl=paste0(haw,"\n",
-      "Including trend line\nMonthly, ",Fmth," to ",
-      Lmth,", ",TS[[6]]$Seas)
+    MYsubtitl=paste0(jtn,", ",geo,", ",sex,
+      "\nIncluding trend line\nMonthly, ",Fmth," to ",
+      Lmth,", ",TS[[7]]$Seas)
     q1 <- mutate(q0,val=.data[[MYtitl]])
     q1 <- filter(q1,REF_DATE>=month1 & REF_DATE<=month2)
     c1 <- ggplot(q1,
@@ -43,9 +44,9 @@ Make_chrtM6 <- function(haw,MYtitl,type,month1,month2,altTitl,interv) {
         linetype="dashed")
     }
   } else if (type==3) {
-    MYsubtitl=paste0(haw,"\n",
-      "Index with starting month = 100\nMonthly, ",Fmth," to ",
-      Lmth,", ",TS[[6]]$Seas)
+    MYsubtitl=paste0(jtn,", ",geo,", ",sex,
+      "\nIndex with starting month = 100\nMonthly, ",Fmth," to ",
+      Lmth,", ",TS[[7]]$Seas)
     q0 <- filter(q0,REF_DATE>=month1 & REF_DATE<=month2)
     q1 <- mutate(q0,val=IDX(.data[[MYtitl]]))
     c1 <- ggplot(q1,
@@ -57,9 +58,9 @@ Make_chrtM6 <- function(haw,MYtitl,type,month1,month2,altTitl,interv) {
         linetype="dashed")
     }
   } else if (type==4) {
-    MYsubtitl=paste0(haw,"\n",
-      "One-month percentage change\nMonthly, ",Fmth," to ",
-      Lmth,", ",TS[[6]]$Seas)
+    MYsubtitl=paste0(jtn,", ",geo,", ",sex,
+      "\nOne-month percentage change\nMonthly, ",Fmth," to ",
+      Lmth,", ",TS[[7]]$Seas)
     q1 <- mutate(q0,val=PC(.data[[MYtitl]])/100)
     q1 <- filter(q1,REF_DATE>=month1 & REF_DATE<=month2)
     c1 <- ggplot(q1,
@@ -71,9 +72,9 @@ Make_chrtM6 <- function(haw,MYtitl,type,month1,month2,altTitl,interv) {
         linetype="dashed")
     }
  } else if (type==5) {
-    MYsubtitl=paste0(haw,"\n",
-      "Twelve-month percentage change\nMonthly, ",Fmth," to ",
-      Lmth,", ",TS[[6]]$Seas)
+    MYsubtitl=paste0(jtn,", ",geo,", ",sex,
+      "\nTwelve-month percentage change\nMonthly, ",Fmth," to ",
+      Lmth,", ",TS[[7]]$Seas)
     q1 <- mutate(q0,val=PC12(.data[[MYtitl]])/100)
     q1 <- filter(q1,REF_DATE>=month1 & REF_DATE<=month2)
     c1 <- ggplot(q1,
@@ -85,10 +86,10 @@ Make_chrtM6 <- function(haw,MYtitl,type,month1,month2,altTitl,interv) {
         linetype="dashed")
     }
   } else if (type==6) {
-    MYsubtitl=paste0(haw,"\n",
-      "Five-month centred moving average (dashed blue line)\nMonthly, ",
-      Fmth," to ",Lmth,", ",TS[[6]]$Seas)
-    q1 <- mutate(q0,val=MA5(.data[[MYtitl]]))
+    MYsubtitl=paste0(jtn,", ",geo,", ",sex,
+      "\nThirteen-month centred moving average (dashed blue line)\nMonthly, ",
+      Fmth," to ",Lmth,", ",TS[[7]]$Seas)
+    q1 <- mutate(q0,val=MA13(.data[[MYtitl]]))
     q1 <- filter(q1,REF_DATE>=month1 & REF_DATE<=month2)
     c1 <- ggplot(q1,
       aes(x=REF_DATE,y=val))+
@@ -113,7 +114,7 @@ Make_chrtM6 <- function(haw,MYtitl,type,month1,month2,altTitl,interv) {
   }
   c1 <- c1 + scale_x_date(breaks=seq.Date(month1,month2,by=interv))+
     labs(title=ChrtTitl,subtitle=paste0(MYsubtitl),
-      caption=TS[[6]]$Ftnt,x="",y="")+
+      caption=TS[[7]]$Ftnt,x="",y="")+
     theme(axis.text.y = element_text(size=18))+
     theme_DB()
   c1

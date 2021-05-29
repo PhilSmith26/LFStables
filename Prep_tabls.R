@@ -60,6 +60,23 @@ q0 <- select(table01,REF_DATE,"HRW"="Hourly wages","TOW"="Type of work",
 q0$REF_DATE <- as.Date(paste0(q0$REF_DATE,"-01"))
 saveRDS(q0,paste0(savespot,"rds/",table01_id,".rds"))
 
+#(06)===========================================================================
+table01_id <- "14-10-0320-01" # Avg usual hours & wages by characteristics, NSA
+table01 <- get_cansim(table01_id,refresh=file_refresh)
+q0 <- select(table01,REF_DATE,"CHR"="Characteristics",
+  "HAW"="Hours and wages",VALUE)
+q0 <- pivot_wider(q0,names_from=HAW, values_from=VALUE)
+q0$REF_DATE <- as.Date(paste0(q0$REF_DATE,"-01"))
+saveRDS(q0,paste0(savespot,"rds/",table01_id,".rds"))
+
+#(07)===========================================================================
+table01_id <- "14-10-0304-01" # Job tenure, NSA
+table01 <- get_cansim(table01_id,refresh=file_refresh)
+q0 <- select(table01,REF_DATE,GEO,"JTN"="Job tenure","SEX"="Sex",
+  "NOC"="National Occupational Classification (NOC)",VALUE)
+q0$REF_DATE <- as.Date(paste0(q0$REF_DATE,"-01"))
+saveRDS(q0,paste0(savespot,"rds/",table01_id,".rds"))
+
 
 
 

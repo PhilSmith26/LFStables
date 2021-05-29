@@ -1,6 +1,6 @@
 # Tabl_specs.R
 # Contains the specifications or metadata for the LFS tables
-# May 26, 2021
+# May 28, 2021
 
 # NOTE: The data for tables are stored and must be updated once per month.
 
@@ -14,7 +14,8 @@ t01 <- list(
   Units = "Thousands of persons",
   Titl = "Labour force characteristics",
   Ftnt = "Source: Statistics Canada table 14-10-0287-01.",
-  Seas = "Seasonally adjusted"
+  Seas = "Seasonally adjusted",
+  Size = 979744
 )
 
 t02 <- list(
@@ -25,7 +26,8 @@ t02 <- list(
   STCno = "14-10-0291-01",
   Titl = "Labour force characteristics by industry",
   Ftnt = "Source: Statistics Canada table 14-10-0291-01.",
-  Seas = "Seasonally adjusted"
+  Seas = "Seasonally adjusted",
+  Size = 412
 )
 
 t03 <- list(
@@ -36,7 +38,8 @@ t03 <- list(
   STCno = "14-10-0289-01",
   Titl = "Actual hours worked at main job by industry",
   Ftnt = "Source: Statistics Canada table 14-10-0289-01.",
-  Seas = "Seasonally adjusted"
+  Seas = "Seasonally adjusted",
+  Size = 32136
 )
 
 t04 <- list(
@@ -47,7 +50,8 @@ t04 <- list(
   STCno = "14-10-0296-01",
   Titl = "Labour force characteristics by occupation",
   Ftnt = "Source: Statistics Canada table 14-10-0296-01.",
-  Seas = "Not seasonally adjusted"
+  Seas = "Not seasonally adjusted",
+  Size = 4241952
 )
 
 t05 <- list(
@@ -58,23 +62,37 @@ t05 <- list(
   STCno = "14-10-0317-01",
   Titl = "Hourly wage distributions by occupation",
   Ftnt = "Source: Statistics Canada table 14-10-0317-01.",
-  Seas = "Not seasonally adjusted"
+  Seas = "Not seasonally adjusted",
+  Size = 670140
 )
 
 t06 <- list(
   Num = 6,
   Strt = as.Date("2001-01-01"),
   Endt = as.Date("2021-04-01"),
-  Units = "Thousands of persons or Persons or dollars",
+  Units = "",
   STCno = "14-10-0320-01",
   Titl = "Average usual hours and wages by selected characteristics",
   Ftnt = "Source: Statistics Canada table 14-10-0320-01.",
-  Seas = "Not seasonally adjusted"
+  Seas = "Not seasonally adjusted",
+  Size = 4636
 )
 
-TS <- list(t01,t02,t03,t04,t05,t06)
+t07 <- list(
+  Num = 7,
+  Strt = as.Date("1987-01-01"),
+  Endt = as.Date("2021-04-01"),
+  Units = "",
+  STCno = "14-10-0304-01",
+  Titl = "Job tenure by occupation",
+  Ftnt = "Source: Statistics Canada table 14-10-0304-01.",
+  Seas = "Not seasonally adjusted",
+  Size = 6240564
+)
 
-tord <- c(1,2,3,4,5,6) # the order of the tables
+TS <- list(t01,t02,t03,t04,t05,t06,t07)
+
+tord <- c(1,2,3,4,5,6,7) # the order of the tables
 numTabs <- length(tord) # Number of tables available in the app
 tordR <- rep(NA,numTabs)
 for (i in 1:numTabs) {

@@ -1,20 +1,12 @@
-# Module for monthly LFC by occupation tables 
-# May 27, 2021
+# Module for monthly job tenure by occupation tables
+# May 28, 2021
 
 source("Tabl_specs.R")
 
-lfc400 <- c(
-  "Labour force",
-  "Employment",
-  "Full-time employment",
-  "Part-time employment",
-  "Unemployment",
-  "Unemployment rate"
-)
-geo400 <- c(
+geo700 <- c(
   "Canada",
   "Newfoundland and Labrador",
-  "Prince Edward Island",
+  "Prince Edward Island",     
   "Nova Scotia",
   "New Brunswick",
   "Quebec",                   
@@ -22,14 +14,25 @@ geo400 <- c(
   "Manitoba",
   "Saskatchewan",             
   "Alberta",
-  "British Columbia"    
+  "British Columbia" 
 )
-sex400 <- c(
+jtn700 <- c(
+  "Total employed, all months",
+  "1 to 3 months",
+  "4 to 6 months",             
+  "7 to 12 months",
+  "13 to 60 months",
+  "61 to 120 months",          
+  "121 to 240 months",
+  "241 months or more",
+  "Average tenure" 
+)
+sex700 <- c(
   "Both sexes",
   "Males",
-  "Females" 
+  "Females"
 )
-trf400 <- c(
+trf700 <- c(
   "Original data (no transformation)",
   "Index, first month = 100",
   "One-month percentage change",
@@ -37,7 +40,7 @@ trf400 <- c(
 )
 # Starting conditions for initial monthly table and chart
 # First the full sequence of dates in "Date" format
-monsD <- seq.Date(TS[[4]]$Strt,TS[[4]]$Endt,by="month")
+monsD <- seq.Date(TS[[7]]$Strt,TS[[7]]$Endt,by="month")
 # Now the corresponding sequence of dates in "character" format
 monsSrt <- character()
 for (i in 1:length(monsD)) {
@@ -46,25 +49,24 @@ for (i in 1:length(monsD)) {
 }
 strtrangT <- c(monsSrt[length(monsSrt)-5],monsSrt[length(monsSrt)])
 
-mt4UI <- function(id) {
+mt7UI <- function(id) {
   tabPanel(tags$b(tags$span(style="color:blue", HTML("Tables"))),
     tags$style(type='text/css', ".selectize-input { 
       font-size: 24px; line-height: 24px;} .selectize-dropdown 
       { font-size: 20px; line-height: 20px; }"),
     fluidRow(column(10,
-      selectInput(NS(id,"lfc"), tags$b(tags$span(style="color:blue", 
-        "Choose a labour force characteristic:")),choices=lfc400,
+      selectInput(NS(id,"geo"), tags$b(tags$span(style="color:blue", 
+        "Choose a geography:")),choices=geo700,
         selectize=FALSE,width = "100%")),
       column(2,tags$b(tags$span(style="color:blue",HTML("Please be patient. This particular data set is quite large and the operation takes several seconds."))))
     ),
-    prettyRadioButtons(NS(id,"geo"),tags$b(tags$span(style="color:blue", 
-        "Choose a geography:")),choices=geo400,bigger=TRUE,
-        outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
+    selectInput(NS(id,"jtn"), tags$b(tags$span(style="color:blue", 
+      "Choose a job tenure length:")),choices = jtn700,selectize=FALSE,width = "100%"),
     prettyRadioButtons(NS(id,"sex"),tags$b(tags$span(style="color:blue", 
-        "Choose a sex:")),choices=sex400,bigger=TRUE,
+        "Choose a sex:")),choices=sex700,bigger=TRUE,
         outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
     prettyRadioButtons(NS(id,"trf"),tags$b(tags$span(style="color:blue", 
-        "Choose a transformation:")),choices=trf400,bigger=TRUE,
+        "Choose a transformation:")),choices=trf700,bigger=TRUE,
         outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
     column(2,offset=10,downloadButton(NS(id,"downloadData1"),
       label="Download table")),
@@ -79,18 +81,18 @@ mt4UI <- function(id) {
   )
 }
 
-mt4Server <- function(id) {
+mt7Server <- function(id) {
   moduleServer(id,function(input,output,session) {
     typedesc <- reactive({input$trf})
+    geo1 <- reactive({input$geo})
+    jtn1 <- reactive({input$jtn})
+    sex1 <- reactive({input$sex})
     type1 <- reactive(case_when(
       input$trf=="Original data (no transformation)"~1,
       input$trf=="Index, first month = 100"~2,
       input$trf=="One-month percentage change"~3,
       input$trf=="Twelve-month percentage change"~4
     ))
-    lfc1 <- reactive({input$lfc})
-    geo1 <- reactive({input$geo})
-    sex1 <- reactive({input$sex})
     month1 <- reactive({
       as.Date(paste0(substr(input$Dates[1],1,3)," 1, ",
         substr(input$Dates[1],5,8)),format("%b %d, %Y"))
@@ -100,7 +102,7 @@ mt4Server <- function(id) {
         substr(input$Dates[2],5,8)),format("%b %d, %Y"))
     })
     expr <- reactive({
-      Make_tablM4(lfc1(),geo1(),sex1(),type1(),month1(),month2())
+      Make_tablM7(geo1(),jtn1(),sex1(),type1(),month1(),month2())
     })
     output$tabl <- render_gt({
         expr()[[1]]
@@ -109,15 +111,15 @@ mt4Server <- function(id) {
       filename=function() {
         paste0(str_replace_all(typedesc()," ","_"),"_",
           str_replace_all(geo1()," ","_"),"_",
-          str_replace_all(sex1()," ","_"),"_",
-          str_replace_all(lfc1()," ","_"),"_","occupations.csv")
+          str_replace_all(jtn1()," ","_"),"_",
+          str_replace_all(sex1()," ","_"),".csv")
       },
       content=function(file) {
         write.csv(expr()[[2]],file)
       }
     )
     observe({
-      monsRange <- seq.Date(TS[[4]]$Strt,TS[[4]]$Endt,by="month")
+      monsRange <- seq.Date(TS[[7]]$Strt,TS[[7]]$Endt,by="month")
       mons <- character()
       for (i in 1:length(monsRange)) {
         mons[i] <- format(monsRange[i],"%b %Y")

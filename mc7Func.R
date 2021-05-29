@@ -1,20 +1,12 @@
-# Module for monthly hours worked charts 
-# May 26, 2021
+# Module for monthly hours and wages by selected characteristics charts
+# May 28, 2021
 
 source("Tabl_specs.R")
 
-lfc401 <- c(
-  "Labour force",
-  "Employment",
-  "Full-time employment",
-  "Part-time employment",
-  "Unemployment",
-  "Unemployment rate"
-)
-geo401 <- c(
+geo701 <- c(
   "Canada",
   "Newfoundland and Labrador",
-  "Prince Edward Island",
+  "Prince Edward Island",     
   "Nova Scotia",
   "New Brunswick",
   "Quebec",                   
@@ -22,17 +14,28 @@ geo401 <- c(
   "Manitoba",
   "Saskatchewan",             
   "Alberta",
-  "British Columbia"    
+  "British Columbia" 
 )
-sex401 <- c(
+jtn701 <- c(
+  "Total employed, all months",
+  "1 to 3 months",
+  "4 to 6 months",             
+  "7 to 12 months",
+  "13 to 60 months",
+  "61 to 120 months",          
+  "121 to 240 months",
+  "241 months or more",
+  "Average tenure" 
+)
+sex701 <- c(
   "Both sexes",
   "Males",
-  "Females" 
+  "Females"
 )
-noc401 <- c(
-  "Total, all occupations",                                                                             
+noc701 <- c(
+  "Total employed, all occupations",                                                                    
   "Management occupations [0]",                                                                         
-  "Senior management occupations [00]",                                                                
+  "Senior management occupations [00]",                                                                 
   "Specialized middle management occupations [01-05]",                                                  
   "Middle management occupations in retail and wholesale trade and customer services [06]",             
   "Middle management occupations in trades, transportation, production and utilities [07-09]",          
@@ -80,20 +83,19 @@ noc401 <- c(
   "Processing, manufacturing and utilities supervisors and central control operators [92]",             
   "Processing and manufacturing machine operators and related production workers [94]",                 
   "Assemblers in manufacturing [95]",                                                                   
-  "Labourers in processing, manufacturing and utilities [96]",                                          
-  "Unclassified occupations"
+  "Labourers in processing, manufacturing and utilities [96]" 
 )
-trf401 <- c(
+trf701 <- c(
   "Original data (no transformation)",
   "Including trend line",
   "Index, first month = 100",
   "One-month percentage change",
   "Twelve-month percentage change",
-  "Five-month centred moving average (dashed blue line)"
+  "Thirteen-month centred moving average (dashed blue line)"
 )
 # Starting conditions for initial monthly table and chart
 # First the full sequence of dates in "Date" format
-monsD <- seq.Date(TS[[3]]$Strt,TS[[3]]$Endt,by="month")
+monsD <- seq.Date(TS[[7]]$Strt,TS[[7]]$Endt,by="month")
 # Now the corresponding sequence of dates in "character" format
 monsSrt <- character()
 for (i in 1:length(monsD)) {
@@ -102,28 +104,29 @@ for (i in 1:length(monsD)) {
 }
 strtrangT <- c(monsSrt[length(monsSrt)-25],monsSrt[length(monsSrt)])
 
-mc4UI <- function(id) {
+mc7UI <- function(id) {
   tabPanel(tags$b(tags$span(style="color:blue", HTML("Charts"))),
     tags$style(type='text/css', ".selectize-input { 
       font-size: 24px; line-height: 24px;} .selectize-dropdown 
       { font-size: 20px; line-height: 20px; }"),
     fluidRow(column(10,
-      selectInput(NS(id,"lfc"), tags$b(tags$span(style="color:blue", 
-        "Choose a labour force characteristic:")),choices=lfc401,
+      selectInput(NS(id,"geo"), tags$b(tags$span(style="color:blue", 
+        "Choose a geography:")),choices=geo701,
         selectize=FALSE,width = "100%")),
       column(2,tags$b(tags$span(style="color:blue",HTML("Please be patient. This particular data set is quite large and the operation takes several seconds."))))
     ),
-    prettyRadioButtons(NS(id,"geo"),tags$b(tags$span(style="color:blue", 
-        "Choose a geography:")),choices=geo401,bigger=TRUE,
-        outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
-    prettyRadioButtons(NS(id,"sex"),tags$b(tags$span(style="color:blue", 
-        "Choose a sex:")),choices=sex401,bigger=TRUE,
-        outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
+    selectInput(NS(id,"jtn"), tags$b(tags$span(style="color:blue", 
+      "Choose a job tenure:")),choices=jtn701,
+      selectize=FALSE,width = "100%"),
     selectInput(NS(id,"noc"), tags$b(tags$span(style="color:blue", 
-      "Choose an occupational group:")),choices = noc401,selectize=FALSE,width = "100%"),
+      "Choose an occupation:")),choices=noc701,
+      selectize=FALSE,width = "100%"),
+    prettyRadioButtons(NS(id,"sex"),tags$b(tags$span(style="color:blue", 
+      "Choose a sex:")),choices=sex701,bigger=TRUE,
+      outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
     fluidRow(column(6,
       prettyRadioButtons(NS(id,"trf"),tags$b(tags$span(style="color:blue", 
-        "Choose a transformation:")),choices=trf401,bigger=TRUE,
+        "Choose a transformation:")),choices=trf701,bigger=TRUE,
         outline=TRUE,inline=TRUE,shape="round",animation="pulse")),
       column(4,textInput(NS(id,"altTitl"),label="Choose your own chart title (optional):",
         value="",width="90%")),
@@ -140,19 +143,20 @@ mc4UI <- function(id) {
   )
 }
 
-mc4Server <- function(id) {
+mc7Server <- function(id) {
   moduleServer(id,function(input,output,session) {
     typedesc <- reactive({input$trf})
-    lfc1 <- reactive({input$lfc})
     geo1 <- reactive({input$geo})
+    jtn1 <- reactive({input$jtn})
     sex1 <- reactive({input$sex})
+    noc1 <- reactive({input$noc})
     type1 <- reactive(case_when(
       input$trf=="Original data (no transformation)"~1,
       input$trf=="Including trend line"~2,
       input$trf=="Index, first month = 100"~3,
       input$trf=="One-month percentage change"~4,
       input$trf=="Twelve-month percentage change"~5,
-      input$trf=="Five-month centred moving average (dashed blue line)"~6
+      input$trf=="Thirteen-month centred moving average (dashed blue line)"~6
     ))    
     month1 <- reactive({
       as.Date(paste0(substr(input$Dates[1],1,3)," 1, ",
@@ -162,15 +166,14 @@ mc4Server <- function(id) {
       as.Date(paste0(substr(input$Dates[2],1,3)," 1, ",
         substr(input$Dates[2],5,8)),format("%b %d, %Y"))
     })
-    noc1 <- reactive({input$noc})
     altTitle <- reactive({input$altTitl})
-    chartP <- reactive({Make_chrtM4(noc1(),lfc1(),geo1(),sex1(),type1(),
+    chartP <- reactive({Make_chrtM7(noc1(),geo1(),jtn1(),sex1(),type1(),
       month1(),month2(),altTitle(),"")})  
     output$chart <- renderPlot({chartP()},height=700)
     output$downloadData1 <- downloadHandler(
       filename=function() {
-        paste0(str_replace_all(lfc1()," ","_"),"_",
-          str_replace_all(geo1()," ","_"),"_",
+        paste0(str_replace_all(geo1()," ","_"),"_",
+          str_replace_all(jtn1()," ","_"),"_",
           str_replace_all(sex1()," ","_"),"_",
           str_replace_all(noc1()," ","_"),"_",
           str_replace_all(typedesc()," ","_"),".png")
@@ -180,7 +183,7 @@ mc4Server <- function(id) {
       }
     )
     observe({
-      monsRange <- seq.Date(TS[[4]]$Strt,TS[[4]]$Endt,by="month")
+      monsRange <- seq.Date(TS[[7]]$Strt,TS[[7]]$Endt,by="month")
       mons <- character()
       for (i in 1:length(monsRange)) {
         mons[i] <- format(monsRange[i],"%b %Y")

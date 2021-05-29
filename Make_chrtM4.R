@@ -4,44 +4,7 @@
 pkgs <- c("tidyverse","scales","tibble","stringr","rlang","lubridate")
 inst <- lapply(pkgs,library,character.only=TRUE)
 
-source("Tabl_specs.R")
-
-IDX <- function(x) {y <- round(100*x/x[1],1)}
-PC <- function(x) {y <- round(100*(x/lag(x)-1),1)}
-PC12 <- function(x) {y <- round(100*(x/lag(x,12)-1),1)}
-MA5 <- function(x) {
-  y <- round((lag(x,2)+lag(x,1)+x+lead(x,1)+lead(x,2))/5,1)
-  n <- length(x)
-  y[1] <- x[1]; 
-  y[2] <- (x[1]+x[2]+x[3])/3
-  y[n] <- x[n]
-  y[n-1] <- (x[n-2]+x[n-1]+x[n])/3
-  return(y)
-}
-posNeg <- function(x) {sum(x>0,na.rm=TRUE)>0 & sum(x>0,na.rm=TRUE)<length(x)}
-datDif <- function(month1,month2) {
-  y1 <- year(month1)
-  m1 <- month(month1)
-  y2 <- year(month2)
-  m2 <- month(month2)
-  distance <- as.numeric(y2)-as.numeric(y1)
-}
-
-# Standard theme for charts
-theme_DB <- function(base_size = 11,
-  base_family = "",
-  base_line_size = base_size / 170,
-  base_rect_size = base_size / 170) {
-  theme(
-    plot.title = element_text(colour="black",size=14,face="bold",hjust=0),
-    plot.subtitle = element_text(colour="black",size=14,hjust=0),
-    panel.background = element_rect(fill="aliceblue",colour="black"),
-    panel.border = element_rect(fill=NA,colour="black"),
-    axis.text.x = element_text(angle=45,hjust=1,vjust=0.95,size=10),
-    axis.text.y = element_text(size=14),
-    complete = TRUE
-  )
-}
+source("Common_stuff.R")
 
 Make_chrtM4 <- function(MYtitl,lfc,geo,sex,type,month1,month2,altTitl,interv) {
   q0 <- readRDS(paste0("rds/",TS[[4]]$STCno,".rds"))
