@@ -3,7 +3,7 @@
 
 source("Tabl_specs.R")
 
-geo1 <- c( # geography options for a monthly table
+geo10 <- c( # geography options for a monthly table
   "Canada",
   "Newfoundland and Labrador",
   "Prince Edward Island",
@@ -16,12 +16,12 @@ geo1 <- c( # geography options for a monthly table
   "Alberta",
   "British Columbia"
 )
-sex1 <- c( # sex options for a monthly table
+sex10 <- c( # sex options for a monthly table
   "Both sexes",
   "Males",
   "Females"
 )
-age1 <- c( # age group options for a monthly table
+age10 <- c( # age group options for a monthly table
   "15 years and over",
   "15 to 64 years",
   "15 to 24 years",    
@@ -32,7 +32,7 @@ age1 <- c( # age group options for a monthly table
   "55 years and over",
   "55 to 64 years"  
 )
-trf1 <- c(
+trf10 <- c(
   "Original data (no transformation)",
   "Index, first month = 100",
   "One-month percentage change",
@@ -50,23 +50,23 @@ for (i in 1:length(monsD)) {
 strtrangT <- c(monsSrt[length(monsSrt)-5],monsSrt[length(monsSrt)])
 
 mtUI <- function(id) {
-  tabPanel(tags$b(tags$span(style="color:blue", HTML("Monthly<br>tables"))),
+  tabPanel(tags$b(tags$span(style="color:blue", HTML("Tables"))),
     tags$style(type='text/css', ".selectize-input { 
       font-size: 24px; line-height: 24px;} .selectize-dropdown 
       { font-size: 20px; line-height: 20px; }"),
     #selectInput(NS(id,"tab1"), tags$b(tags$span(style="color:blue", 
     #  "Choose a table:")),choices = tn,selectize=FALSE,width = "100%"),
     prettyRadioButtons(NS(id,"geo"), tags$b(tags$span(style="color:blue", 
-        "Choose a geography:")),choices=geo1,bigger=TRUE,
+        "Choose a geography:")),choices=geo10,bigger=TRUE,
         outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
     prettyRadioButtons(NS(id,"sex22"), tags$b(tags$span(style="color:blue", 
-        "Choose a sex:")),choices=sex1,bigger=TRUE,
+        "Choose a sex:")),choices=sex10,bigger=TRUE,
         outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
     prettyRadioButtons(NS(id,"age"), tags$b(tags$span(style="color:blue", 
-        "Choose an age group:")),choices=age1,bigger=TRUE,
+        "Choose an age group:")),choices=age10,bigger=TRUE,
         outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
     prettyRadioButtons(NS(id,"trf11"),tags$b(tags$span(style="color:blue", 
-        "Choose a transformation:")),choices=trf1,bigger=TRUE,
+        "Choose a transformation:")),choices=trf10,bigger=TRUE,
         outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
     column(2,offset=10,downloadButton(NS(id,"downloadData1"),
       label="Download table")),

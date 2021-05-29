@@ -98,7 +98,7 @@ Make_chrtM <- function(MYtitl,geo,sex,age,type,month1,month2,altTitl,interv) {
         linetype="dashed")
     }
   } else if (type==3) {
-    MYsubtitl=paste0(geo,", ",sex,", ",age,", index with starting quarter = 100\nMonthly, ",Fmth," to ",
+    MYsubtitl=paste0(geo,", ",sex,", ",age,", index with starting month = 100\nMonthly, ",Fmth," to ",
       Lmth,", ",TS[[1]]$Seas)
     q0 <- filter(q0,REF_DATE>=month1 & REF_DATE<=month2)
     q1 <- mutate(q0,val=IDX(.data[[MYtitl]]))
