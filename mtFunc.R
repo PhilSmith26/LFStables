@@ -3,7 +3,7 @@
 
 source("Tabl_specs.R")
 
-geo1 <- c( # geography options for a monthly table
+geo10 <- c( # geography options for a monthly table
   "Canada",
   "Newfoundland and Labrador",
   "Prince Edward Island",
@@ -16,12 +16,12 @@ geo1 <- c( # geography options for a monthly table
   "Alberta",
   "British Columbia"
 )
-sex1 <- c( # sex options for a monthly table
+sex10 <- c( # sex options for a monthly table
   "Both sexes",
   "Males",
   "Females"
 )
-age1 <- c( # age group options for a monthly table
+age10 <- c( # age group options for a monthly table
   "15 years and over",
   "15 to 64 years",
   "15 to 24 years",    
@@ -32,7 +32,7 @@ age1 <- c( # age group options for a monthly table
   "55 years and over",
   "55 to 64 years"  
 )
-trf1 <- c(
+trf10 <- c(
   "Original data (no transformation)",
   "Index, first month = 100",
   "One-month percentage change",
@@ -45,34 +45,36 @@ monsD <- seq.Date(TS[[1]]$Strt,TS[[1]]$Endt,by="month")
 monsSrt <- character()
 for (i in 1:length(monsD)) {
   monsSrt[i] <- format(monsD[i],"%b %Y")
-#  monsSrt[i] <- paste0(year(monsD[i])," M",month(monsD[i]))
 }
 strtrangT <- c(monsSrt[length(monsSrt)-5],monsSrt[length(monsSrt)])
 
 mtUI <- function(id) {
-  tabPanel(tags$b(tags$span(style="color:blue", HTML("Monthly<br>tables"))),
+  tabPanel(tags$b(tags$span(style="color:blue", HTML("Tables"))),
     tags$style(type='text/css', ".selectize-input { 
       font-size: 24px; line-height: 24px;} .selectize-dropdown 
       { font-size: 20px; line-height: 20px; }"),
-    #selectInput(NS(id,"tab1"), tags$b(tags$span(style="color:blue", 
-    #  "Choose a table:")),choices = tn,selectize=FALSE,width = "100%"),
-    prettyRadioButtons(NS(id,"geo"), tags$b(tags$span(style="color:blue", 
-        "Choose a geography:")),choices=geo1,bigger=TRUE,
+    #tags$style(HTML(".selectize-control, .option {
+    #  color:black; 
+    #  font-size:26px;
+    #  font-family:Optima
+    #}")), 
+    prettyRadioButtons(NS(id,"geo"), tags$b(tags$span(style="color:blue;font-size:20px", 
+        "Choose a geography:")),choices=geo10,
+      bigger=TRUE,
         outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
-    prettyRadioButtons(NS(id,"sex22"), tags$b(tags$span(style="color:blue", 
-        "Choose a sex:")),choices=sex1,bigger=TRUE,
+    prettyRadioButtons(NS(id,"sex22"), tags$b(tags$span(style="color:blue;font-size:20px", 
+        "Choose a sex:")),choices=sex10,bigger=TRUE,
         outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
-    prettyRadioButtons(NS(id,"age"), tags$b(tags$span(style="color:blue", 
-        "Choose an age group:")),choices=age1,bigger=TRUE,
+    prettyRadioButtons(NS(id,"age"), tags$b(tags$span(style="color:blue;font-size:20px", 
+        "Choose an age group:")),choices=age10,bigger=TRUE,
         outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
-    prettyRadioButtons(NS(id,"trf11"),tags$b(tags$span(style="color:blue", 
-        "Choose a transformation:")),choices=trf1,bigger=TRUE,
+    prettyRadioButtons(NS(id,"trf11"),tags$b(tags$span(style="color:blue;font-size:20px", 
+        "Choose a transformation:")),choices=trf10,bigger=TRUE,
         outline=TRUE,inline=TRUE,shape="round",animation="pulse"),
     column(2,offset=10,downloadButton(NS(id,"downloadData1"),
       label="Download table")),
     chooseSliderSkin(skin="Round",color="blue"),
-    sliderTextInput(NS(id,"Dates"),label= #tags$b(tags$span(style="color:blue", 
-      "Choose starting and ending dates:",#)),
+    sliderTextInput(NS(id,"Dates"),label="Choose starting and ending dates:",
       choices=monsSrt,
       selected=strtrangT,
       dragRange = TRUE,
@@ -84,7 +86,6 @@ mtUI <- function(id) {
 
 mtServer <- function(id) {
   moduleServer(id,function(input,output,session) {
-    #tab2  <- reactive({as.numeric(input$tab1)})
     geo2  <- reactive({input$geo})
     sex2  <- reactive({input$sex22})
     age2  <- reactive({input$age})
@@ -130,7 +131,6 @@ mtServer <- function(id) {
         paste0(gsub("([ ])","_",geo2()),"_",
           gsub("([ ])","_",sex2()),"_",
           gsub("([ ])","_",age2()),".csv")
-        #paste0(TS[[1]]$STCno,".csv")
       },
       content=function(file) {
         write.csv(expr()[[2]],file)
@@ -149,16 +149,5 @@ mtServer <- function(id) {
         choices = picks,
         selected=strtrang1)
     })
-    #observeEvent(input$sex22, {
-    #  message(paste0("input$sex22 class is ",class(input$sex22)))
-    #  message(paste0("input$age class is ",class(input$age)))
-    #  message(paste0("input$geo class is ",class(input$geo)))
-    #  message(paste0("input$tab2 class is ",class(input$tab2)))
-    #  message(paste0("input$type1 class is ",class(input$type1)))
-    #})
-    #observeEvent(input$do,{
-    #  session$sendCustomMessage(type = 'testmessage',
-    #  message = 'Thank you for clicking')
-    #})
   })
 }

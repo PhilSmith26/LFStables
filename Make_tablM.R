@@ -35,7 +35,7 @@ Make_tablM <- function(geo,sex,age,type,month1,month2) {
   for (i in 1:length(colnam1)) {
     colnam2[i] <- format(colnam1[i],"%b %Y")
   }
-  subtitle1 <- paste0(geo,", ",sex,", ",age)
+  subtitle1 <- paste0(geo,", ",sex,", ",age,"\n")
   # There are forbidden age values, unless GEO is Canada: 
   #if ((geo!="Canada") & (age=="15 to 19 years" | age=="20 to 24 years" |
   #    age=="55 to 64 years")) 
@@ -45,7 +45,7 @@ Make_tablM <- function(geo,sex,age,type,month1,month2) {
   q0 <- pivot_wider(q0,names_from=LFC,values_from=VALUE)
   # set the type variables
   subtitle2 <- case_when(
-        type==1 ~ paste0(TS[[1]]$Units,"<br>",
+        type==1 ~ paste0("<br>",TS[[1]]$Units,"<br>",
           TS[[1]]$Seas,"<br><br>"),
         type==2 ~ paste0("<br>Indexed to ",colnam2[1]," = 100<br>",
           TS[[1]]$Seas,"<br><br>"),
@@ -76,7 +76,7 @@ Make_tablM <- function(geo,sex,age,type,month1,month2) {
   if (dec2==3) {
     q1 <- select(q1,-ends_with(" rate"))
   }
-  subtitle3 <- paste0(subtitle1,"\n",subtitle2)
+  subtitle3 <- paste0(subtitle1,subtitle2)
   nc <- ncol(q1)-1;
   cnms <- colnames(q1)
   ct2 <- sum(str_count(cnms," rate"))
@@ -118,7 +118,7 @@ Make_tablM <- function(geo,sex,age,type,month1,month2) {
   }
     gt_tbl <- cols_align(gt_tbl,
       align=c("left"),
-      columns=vars(`Components`))
+      columns=c(`Components`))
   gt_tbl <- cols_label(gt_tbl,
       Components="")
   gt_tbl <- tab_style(gt_tbl,
